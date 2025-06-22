@@ -1,23 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useRef, useState } from 'react';
 
 function App() {
+  const [task,setTask]= useState('');
+  const [tasks,setTasks]=useState([]);
+  const isFirstRender=useRef(true);
+  // const [hasMounted,setHasMounted]=useState(false);
+  //on mount
+  useEffect(()=>{
+    const savedTasks=JSON.parse(localStorage.getItem("tasks"));
+    if(savedTasks) setTasks(savedTasks);
+  },[]);
+  //on update
+  useEffect(()=>{
+    // if(hasMounted){ localStorage.setItem("tasks",JSON.stringify(tasks));} else setHasMounted(true);
+    if(isFirstRender.current){
+      isFirstRender.current=false
+      return;
+    }
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  },[tasks]);
+  const addTask=()=>{
+    if(task.trim()===""){ console.log("inside the if block");return};
+    setTasks([...tasks,task]);
+    setTask('');
+  }
+  const deleteTask=(deleteIndex)=>{
+    setTasks(tasks.filter((_,i)=>i!==deleteIndex));
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div >
+        <input placeholder='Enter the task' value={task} onChange={(e) => setTask(e.target.value)} />
+        <button onClick={addTask}>+</button>
+      </div>
+      <div>
+        <h1>Todo Tamer</h1>
+        <ul>
+         {tasks.map((todo,i)=>(
+          <li key={i}>
+            {todo}
+            <button onClick={()=>deleteTask(i)}>❌</button>
+            </li>
+         ))} 
+         </ul>
+      </div>
     </div>
   );
 }
