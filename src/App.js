@@ -1,8 +1,10 @@
+import { Button, TextField } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
 function App() {
   const [task,setTask]= useState('');
   const [tasks,setTasks]=useState([]);
+  const [category,setCategory]=useState("Work");
   const isFirstRender=useRef(true);
   // const [hasMounted,setHasMounted]=useState(false);
   //on mount
@@ -21,7 +23,12 @@ function App() {
   },[tasks]);
   const addTask=()=>{
     if(task.trim()===""){ console.log("inside the if block");return};
-    setTasks([...tasks,task]);
+    const newTask={
+      text:task.trim(),
+      category
+    }
+    setTasks([...tasks,newTask])
+    // setTasks([...tasks,{text: task, category}]); -- can give like this also
     setTask('');
   }
   const deleteTask=(deleteIndex)=>{
@@ -30,16 +37,22 @@ function App() {
   return (
     <div>
       <div >
-        <input placeholder='Enter the task' value={task} onChange={(e) => setTask(e.target.value)} />
-        <button onClick={addTask}>+</button>
+        <TextField placeholder='Enter the task' value={task} onChange={(e) => setTask(e.target.value)} />
+          <select value={category} onChange={(e)=>setCategory(e.target.value)}>
+            <option value="Work">Work</option>
+            <option value="Home">Home</option>
+            <option value="Fitness">Fitness</option>
+            <option value="Others">Others</option>
+          </select>
+        <Button onClick={addTask}>+</Button>
       </div>
       <div>
         <h1>Todo Tamer</h1>
         <ul>
          {tasks.map((todo,i)=>(
           <li key={i}>
-            {todo}
-            <button onClick={()=>deleteTask(i)}>❌</button>
+            {todo.text} <em>({todo.category})</em>
+            <Button onClick={()=>deleteTask(i)}>❌</Button>
             </li>
          ))} 
          </ul>
